@@ -19,11 +19,13 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import java.util.Objects;
+
 public class LoginActivity extends AppCompatActivity {
 
     // creating variable for edit text, textview,
     // button, progress bar and firebase auth.
-    private TextInputEditText userNameEdt, passwordEdt;
+    private TextInputEditText emailTV, passwordEdt;
     private Button loginBtn;
     private TextView newUserTV;
     private FirebaseAuth mAuth;
@@ -35,13 +37,15 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
         // initializing all our variables.
-        userNameEdt = findViewById(R.id.idEdtUserName);
+        emailTV = findViewById(R.id.idEdtEmail);
         passwordEdt = findViewById(R.id.idEdtPassword);
         loginBtn = findViewById(R.id.idBtnLogin);
         newUserTV = findViewById(R.id.idTVNewUser);
+
         mAuth = FirebaseAuth.getInstance();
         loadingPB = findViewById(R.id.idPBLoading);
-        // adding click listener for our new user tv.
+
+        // adding click listener for our new user text view
         newUserTV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -57,14 +61,17 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View v) {
                 // hiding our progress bar.
                 loadingPB.setVisibility(View.VISIBLE);
+
                 // getting data from our edit text on below line.
-                String email = userNameEdt.getText().toString();
-                String password = passwordEdt.getText().toString();
+                String email = Objects.requireNonNull(emailTV.getText()).toString();
+                String password = Objects.requireNonNull(passwordEdt.getText()).toString();
+
                 // on below line validating the text input.
                 if (TextUtils.isEmpty(email) && TextUtils.isEmpty(password)) {
                     Toast.makeText(LoginActivity.this, "Please enter your credentials..", Toast.LENGTH_SHORT).show();
                     return;
                 }
+
                 // on below line we are calling a sign in method and passing email and password to it.
                 mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
