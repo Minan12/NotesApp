@@ -1,7 +1,6 @@
-package io.bonan.notes;
+package io.bonan.notes.adapter;
 
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -9,7 +8,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -19,22 +17,24 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.textfield.TextInputEditText;
-import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.database.FirebaseDatabase;
 import com.orhanobut.dialogplus.DialogPlus;
 import com.orhanobut.dialogplus.ViewHolder;
+import io.bonan.notes.NoteListActivity;
+import io.bonan.notes.R;
+import io.bonan.notes.model.NoteModel;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
+public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.MyViewHolder> {
 
     Context context;
 
-    ArrayList<NoteModelActivity> list;
+    ArrayList<NoteModel> list;
 
-    public MyAdapter(Context context, ArrayList<NoteModelActivity> list) {
+    public NoteAdapter(Context context, ArrayList<NoteModel> list) {
         this.context = context;
         this.list = list;
     }
@@ -49,9 +49,9 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
 
-        NoteModelActivity noteModelActivity = list.get(position);
-        holder.title.setText(noteModelActivity.getTitle());
-        holder.description.setText(noteModelActivity.getDescription());
+        NoteModel noteModel = list.get(position);
+        holder.title.setText(noteModel.getTitle());
+        holder.description.setText(noteModel.getDescription());
 
         holder.btnEdit.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -68,11 +68,10 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
 
                 Button btnEdit = view.findViewById(R.id.btn_Update);
 
-                title.setText(noteModelActivity.getTitle());
-                description.setText(noteModelActivity.getDescription());
+                title.setText(noteModel.getTitle());
+                description.setText(noteModel.getDescription());
 
                 dialogPlus.show();
-
 
                 btnEdit.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -82,12 +81,12 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
                         map.put("description", description.getText().toString());
 
                         FirebaseDatabase.getInstance().getReference().child("Notes")
-                                .child(noteModelActivity.getTitle()).updateChildren(map)
+                                .child(noteModel.getTitle()).updateChildren(map)
                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void unused) {
                                         Toast.makeText(holder.title.getContext(), "Data Telah DiUpdate", Toast.LENGTH_SHORT).show();
-                                        context.startActivity(new Intent(holder.title.getContext(),NoteListActivity.class));
+                                        context.startActivity(new Intent(holder.title.getContext(), NoteListActivity.class));
                                         dialogPlus.dismiss();
                                     }
                                 })
@@ -114,7 +113,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         FirebaseDatabase.getInstance().getReference().child("Notes")
-                                .child(noteModelActivity.getTitle()).removeValue();
+                                .child(noteModel.getTitle()).removeValue();
                         Intent intent = new Intent(holder.title.getContext(), NoteListActivity.class);
                         context.startActivity(new Intent(holder.title.getContext(), NoteListActivity.class));
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
