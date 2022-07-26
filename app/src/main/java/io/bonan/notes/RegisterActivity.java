@@ -34,7 +34,7 @@ public class RegisterActivity extends AppCompatActivity {
         setContentView(R.layout.activity_register);
 
         // initializing all our variables.
-        userNameEdt = findViewById(R.id.idEdtUserName);
+        userNameEdt = findViewById(R.id.idEdtEmail);
         passwordEdt = findViewById(R.id.idEdtPassword);
         loadingPB = findViewById(R.id.idPBLoading);
         confirmPwdEdt = findViewById(R.id.idEdtConfirmPassword);
@@ -68,7 +68,6 @@ public class RegisterActivity extends AppCompatActivity {
                 if (!pwd.equals(cnfPwd)) {
                     Toast.makeText(RegisterActivity.this, "Please check both having same password..", Toast.LENGTH_SHORT).show();
                 } else if (TextUtils.isEmpty(userName) && TextUtils.isEmpty(pwd) && TextUtils.isEmpty(cnfPwd)) {
-
                     // checking if the text fields are empty or not.
                     Toast.makeText(RegisterActivity.this, "Please enter your credentials..", Toast.LENGTH_SHORT).show();
                 } else {
@@ -79,15 +78,16 @@ public class RegisterActivity extends AppCompatActivity {
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             // on below line we are checking if the task is success or not.
                             if (task.isSuccessful()) {
-
                                 // in on success method we are hiding our progress bar and opening a login activity.
                                 loadingPB.setVisibility(View.GONE);
+
                                 Toast.makeText(RegisterActivity.this, "User Registered..", Toast.LENGTH_SHORT).show();
+
                                 Intent i = new Intent(RegisterActivity.this, LoginActivity.class);
                                 startActivity(i);
+
                                 finish();
                             } else {
-
                                 // in else condition we are displaying a failure toast message.
                                 loadingPB.setVisibility(View.GONE);
                                 Toast.makeText(RegisterActivity.this, "Fail to register user..", Toast.LENGTH_SHORT).show();
