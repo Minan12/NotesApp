@@ -19,11 +19,10 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-public class LoginActivity extends AppCompatActivity {
+import java.util.Objects;
 
-    // creating variable for edit text, textview,
-    // button, progress bar and firebase auth.
-    private TextInputEditText userNameEdt, passwordEdt;
+public class LoginActivity extends AppCompatActivity {
+    private TextInputEditText emailTV, passwordEdt;
     private Button loginBtn;
     private TextView newUserTV;
     private FirebaseAuth mAuth;
@@ -34,14 +33,16 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        // initializing all our variables.
-        userNameEdt = findViewById(R.id.idEdtUserName);
+        // initializing all our variables
+        emailTV = findViewById(R.id.idEdtEmail);
         passwordEdt = findViewById(R.id.idEdtPassword);
         loginBtn = findViewById(R.id.idBtnLogin);
         newUserTV = findViewById(R.id.idTVNewUser);
+
         mAuth = FirebaseAuth.getInstance();
         loadingPB = findViewById(R.id.idPBLoading);
-        // adding click listener for our new user tv.
+
+        // adding click listener for our new user text view
         newUserTV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -51,27 +52,30 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        // adding on click listener for our login button.
+        // adding on click listener for our login button
         loginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // hiding our progress bar.
+                // hiding our progress bar
                 loadingPB.setVisibility(View.VISIBLE);
-                // getting data from our edit text on below line.
-                String email = userNameEdt.getText().toString();
-                String password = passwordEdt.getText().toString();
+
+                // getting data from our edit text on below line
+                String email = Objects.requireNonNull(emailTV.getText()).toString();
+                String password = Objects.requireNonNull(passwordEdt.getText()).toString();
+
                 // on below line validating the text input.
                 if (TextUtils.isEmpty(email) && TextUtils.isEmpty(password)) {
                     Toast.makeText(LoginActivity.this, "Please enter your credentials..", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                // on below line we are calling a sign in method and passing email and password to it.
+
+                // on below line we are calling a sign in method and passing email and password to it
                 mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
-                        // on below line we are checking if the task is success or not.
+                        // on below line we are checking if the task is success or not
                         if (task.isSuccessful()) {
-                            // on below line we are hiding our progress bar.
+                            // on below line we are hiding our progress bar
                             loadingPB.setVisibility(View.GONE);
                             Toast.makeText(LoginActivity.this, "Login Successful..", Toast.LENGTH_SHORT).show();
                             // on below line we are opening our mainactivity.
@@ -79,7 +83,7 @@ public class LoginActivity extends AppCompatActivity {
                             startActivity(i);
                             finish();
                         } else {
-                            // hiding our progress bar and displaying a toast message.
+                            // hiding our progress bar and displaying a toast message
                             loadingPB.setVisibility(View.GONE);
                             Toast.makeText(LoginActivity.this, "Please enter valid user credentials..", Toast.LENGTH_SHORT).show();
                         }

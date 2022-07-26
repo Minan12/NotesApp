@@ -1,7 +1,6 @@
-package io.bonan.notes;
+package io.bonan.notes.adapter;
 
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -9,7 +8,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -19,24 +17,31 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.textfield.TextInputEditText;
-import com.google.android.material.textfield.TextInputLayout;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.FirebaseDatabase;
 import com.orhanobut.dialogplus.DialogPlus;
 import com.orhanobut.dialogplus.ViewHolder;
+import io.bonan.notes.NoteListActivity;
+import io.bonan.notes.R;
+import io.bonan.notes.model.NoteModel;
+import io.bonan.notes.util.DateUtil;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
-public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
-
+public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.MyViewHolder> {
     Context context;
+    ArrayList<String> keyList;
+    ArrayList<NoteModel> valueList;
+    FirebaseUser user;
 
-    ArrayList<NoteModelActivity> list;
-
-    public MyAdapter(Context context, ArrayList<NoteModelActivity> list) {
+    public NoteAdapter(Context context, ArrayList<String> keyList, ArrayList<NoteModel> valueList) {
         this.context = context;
-        this.list = list;
+        this.keyList = keyList;
+        this.valueList = valueList;
     }
 
     @NonNull
@@ -48,10 +53,11 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
+        String keyModel = keyList.get(position);
+        NoteModel noteModel = valueList.get(position);
 
-        NoteModelActivity noteModelActivity = list.get(position);
-        holder.title.setText(noteModelActivity.getTitle());
-        holder.description.setText(noteModelActivity.getDescription());
+        holder.title.setText(noteModel.getTitle());
+        holder.description.setText(noteModel.getDescription());
 
         holder.btnEdit.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -60,7 +66,6 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
                         .setContentHolder(new ViewHolder(R.layout.update_popup))
                         .setExpanded(true, 1200)
                         .create();
-
                 View view = dialogPlus.getHolderView();
 
                 TextInputEditText title = view.findViewById(R.id.ed_Title);
@@ -68,26 +73,29 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
 
                 Button btnEdit = view.findViewById(R.id.btn_Update);
 
-                title.setText(noteModelActivity.getTitle());
-                description.setText(noteModelActivity.getDescription());
+                title.setText(noteModel.getTitle());
+                description.setText(noteModel.getDescription());
 
                 dialogPlus.show();
-
 
                 btnEdit.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         Map<String, Object> map = new HashMap<>();
-                        map.put("title", title.getText().toString());
-                        map.put("description", description.getText().toString());
+                        map.put("title", Objects.requireNonNull(title.getText()).toString());
+                        map.put("description", Objects.requireNonNull(description.getText()).toString());
+                        map.put("createdAt", DateUtil.dateNow());
 
-                        FirebaseDatabase.getInstance().getReference().child("Notes")
-                                .child(noteModelActivity.getTitle()).updateChildren(map)
+                        // get current logged-in user
+                        user = FirebaseAuth.getInstance().getCurrentUser();
+
+                        FirebaseDatabase.getInstance().getReference().child("users").child(user.getUid())
+                                .child("notes").child(keyModel).updateChildren(map)
                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void unused) {
                                         Toast.makeText(holder.title.getContext(), "Data Telah DiUpdate", Toast.LENGTH_SHORT).show();
-                                        context.startActivity(new Intent(holder.title.getContext(),NoteListActivity.class));
+                                        context.startActivity(new Intent(holder.title.getContext(), NoteListActivity.class));
                                         dialogPlus.dismiss();
                                     }
                                 })
@@ -113,15 +121,20 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
                 builder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        FirebaseDatabase.getInstance().getReference().child("Notes")
-                                .child(noteModelActivity.getTitle()).removeValue();
+                        // get current logged-in user
+                        user = FirebaseAuth.getInstance().getCurrentUser();
+
+                        FirebaseDatabase.getInstance().getReference().child("users").child(user.getUid())
+                                .child("notes").child(keyModel).removeValue();
+
                         Intent intent = new Intent(holder.title.getContext(), NoteListActivity.class);
-                        context.startActivity(new Intent(holder.title.getContext(), NoteListActivity.class));
+                        context.startActivity(intent);
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         Toast.makeText(holder.title.getContext(), "Note Berhasil di Delete", Toast.LENGTH_SHORT).show();
                     }
                 });
+
                 builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -132,18 +145,15 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
             }
         });
 
-
     }
 
     @Override
     public int getItemCount() {
-        return list.size();
+        return valueList.size();
     }
 
     public static class MyViewHolder extends RecyclerView.ViewHolder{
-
         TextView title, description;
-
         Button btnEdit, btnDelete;
 
         public MyViewHolder(@NonNull View itemView) {
@@ -154,7 +164,6 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
 
             btnEdit = itemView.findViewById(R.id.btn_Update);
             btnDelete = itemView.findViewById(R.id.btn_Delete);
-
         }
     }
 

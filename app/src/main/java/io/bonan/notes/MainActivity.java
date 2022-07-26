@@ -10,9 +10,7 @@ import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 
-
 public class MainActivity extends AppCompatActivity {
-
     Button btn_to_add, btn_to_List, btn_logout;
     FirebaseAuth mAuth;
 
@@ -24,13 +22,14 @@ public class MainActivity extends AppCompatActivity {
         btn_to_add = findViewById(R.id.button_to_add);
         btn_to_List = findViewById(R.id.button_to_list);
         btn_logout = findViewById(R.id.btn_logout);
+
         mAuth = FirebaseAuth.getInstance();
 
-        // adding on click to add note.
+        // adding on click to add note
         btn_to_add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // opening a login activity on clicking login text.
+                // opening a login activity on clicking login text
                 Intent i = new Intent(MainActivity.this, AddActivity.class);
                 startActivity(i);
             }
@@ -40,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
         btn_to_List.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // opening a login activity on clicking login text.
+                // opening a login activity on clicking login text
                 Intent i = new Intent(MainActivity.this, NoteListActivity.class);
                 startActivity(i);
             }
