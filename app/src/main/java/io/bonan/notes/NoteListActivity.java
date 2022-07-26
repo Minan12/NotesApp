@@ -15,6 +15,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import io.bonan.notes.adapter.NoteAdapter;
+import io.bonan.notes.model.NoteModel;
 
 import java.util.ArrayList;
 
@@ -22,8 +24,8 @@ public class NoteListActivity extends AppCompatActivity {
 
     RecyclerView recyclerView;
     DatabaseReference databaseReference;
-    MyAdapter myAdapter;
-    ArrayList<NoteModelActivity> list;
+    NoteAdapter myNoteAdapter;
+    ArrayList<NoteModel> list;
     Button btn_Back;
 
     @Override
@@ -39,20 +41,20 @@ public class NoteListActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         list = new ArrayList<>();
-        myAdapter= new MyAdapter(this, list);
-        recyclerView.setAdapter(myAdapter);
+        myNoteAdapter = new NoteAdapter(this, list);
+        recyclerView.setAdapter(myNoteAdapter);
 
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()){
 
-                    NoteModelActivity noteModelActivity = dataSnapshot.getValue(NoteModelActivity.class);
-                    list.add(noteModelActivity);
+                    NoteModel noteModel = dataSnapshot.getValue(NoteModel.class);
+                    list.add(noteModel);
 
                 }
 
-                myAdapter.notifyDataSetChanged();
+                myNoteAdapter.notifyDataSetChanged();
             }
 
             @Override
