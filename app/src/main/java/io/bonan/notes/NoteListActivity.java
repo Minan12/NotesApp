@@ -1,6 +1,7 @@
 package io.bonan.notes;
 
 import android.util.Log;
+import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -27,11 +28,10 @@ import java.util.List;
 import java.util.Map;
 
 public class NoteListActivity extends AppCompatActivity {
-
     RecyclerView recyclerView;
     DatabaseReference databaseReference;
+    FirebaseUser user;
     NoteAdapter myNoteAdapter;
-
     ArrayList<String> keyList;
     ArrayList<NoteModel> valueList;
     Button btn_Back;
@@ -42,11 +42,13 @@ public class NoteListActivity extends AppCompatActivity {
         setContentView(R.layout.activity_note_list);
 
         btn_Back = findViewById(R.id.btn_toBack);
-
         recyclerView = findViewById(R.id.noteList);
+
         // get current logged-in user
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        user = FirebaseAuth.getInstance().getCurrentUser();
+        // db ref
         databaseReference = FirebaseDatabase.getInstance().getReference("users/" + user.getUid() + "/notes");
+
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
@@ -63,18 +65,15 @@ public class NoteListActivity extends AppCompatActivity {
                     NoteModel noteModel = dataSnapshot.getValue(NoteModel.class);
                     keyList.add(dataSnapshot.getKey());
                     valueList.add(noteModel);
-
                 }
-
                 myNoteAdapter.notifyDataSetChanged();
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
+                Toast.makeText(NoteListActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
-
 
         //back
         btn_Back.setOnClickListener(new View.OnClickListener() {
