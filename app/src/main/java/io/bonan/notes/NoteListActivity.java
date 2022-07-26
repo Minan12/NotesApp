@@ -55,7 +55,7 @@ public class NoteListActivity extends AppCompatActivity {
         keyList = new ArrayList<>();
         valueList = new ArrayList<>();
 
-        myNoteAdapter = new NoteAdapter(this, valueList);
+        myNoteAdapter = new NoteAdapter(this, keyList, valueList);
         recyclerView.setAdapter(myNoteAdapter);
 
         databaseReference.addValueEventListener(new ValueEventListener() {

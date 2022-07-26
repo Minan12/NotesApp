@@ -17,26 +17,31 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.FirebaseDatabase;
 import com.orhanobut.dialogplus.DialogPlus;
 import com.orhanobut.dialogplus.ViewHolder;
 import io.bonan.notes.NoteListActivity;
 import io.bonan.notes.R;
 import io.bonan.notes.model.NoteModel;
+import io.bonan.notes.util.DateUtil;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.MyViewHolder> {
-
     Context context;
+    ArrayList<String> keyList;
+    ArrayList<NoteModel> valueList;
+    FirebaseUser user;
 
-    ArrayList<NoteModel> list;
-
-    public NoteAdapter(Context context, ArrayList<NoteModel> list) {
+    public NoteAdapter(Context context, ArrayList<String> keyList, ArrayList<NoteModel> valueList) {
         this.context = context;
-        this.list = list;
+        this.keyList = keyList;
+        this.valueList = valueList;
     }
 
     @NonNull
@@ -48,8 +53,9 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.MyViewHolder> 
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
+        String keyModel = keyList.get(position);
+        NoteModel noteModel = valueList.get(position);
 
-        NoteModel noteModel = list.get(position);
         holder.title.setText(noteModel.getTitle());
         holder.description.setText(noteModel.getDescription());
 
@@ -60,7 +66,6 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.MyViewHolder> 
                         .setContentHolder(new ViewHolder(R.layout.update_popup))
                         .setExpanded(true, 1200)
                         .create();
-
                 View view = dialogPlus.getHolderView();
 
                 TextInputEditText title = view.findViewById(R.id.ed_Title);
@@ -77,11 +82,15 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.MyViewHolder> 
                     @Override
                     public void onClick(View v) {
                         Map<String, Object> map = new HashMap<>();
-                        map.put("title", title.getText().toString());
-                        map.put("description", description.getText().toString());
+                        map.put("title", Objects.requireNonNull(title.getText()).toString());
+                        map.put("description", Objects.requireNonNull(description.getText()).toString());
+                        map.put("createdAt", DateUtil.dateNow());
 
-                        FirebaseDatabase.getInstance().getReference().child("Notes")
-                                .child(noteModel.getTitle()).updateChildren(map)
+                        // get current logged-in user
+                        user = FirebaseAuth.getInstance().getCurrentUser();
+
+                        FirebaseDatabase.getInstance().getReference().child("users").child(user.getUid())
+                                .child("notes").child(keyModel).updateChildren(map)
                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void unused) {
@@ -112,10 +121,14 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.MyViewHolder> 
                 builder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        FirebaseDatabase.getInstance().getReference().child("Notes")
-                                .child(noteModel.getTitle()).removeValue();
+                        // get current logged-in user
+                        user = FirebaseAuth.getInstance().getCurrentUser();
+
+                        FirebaseDatabase.getInstance().getReference().child("users").child(user.getUid())
+                                .child("notes").child(keyModel).removeValue();
+
                         Intent intent = new Intent(holder.title.getContext(), NoteListActivity.class);
-                        context.startActivity(new Intent(holder.title.getContext(), NoteListActivity.class));
+                        context.startActivity(intent);
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         Toast.makeText(holder.title.getContext(), "Note Berhasil di Delete", Toast.LENGTH_SHORT).show();
@@ -131,18 +144,15 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.MyViewHolder> 
             }
         });
 
-
     }
 
     @Override
     public int getItemCount() {
-        return list.size();
+        return valueList.size();
     }
 
     public static class MyViewHolder extends RecyclerView.ViewHolder{
-
         TextView title, description;
-
         Button btnEdit, btnDelete;
 
         public MyViewHolder(@NonNull View itemView) {
@@ -153,7 +163,6 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.MyViewHolder> 
 
             btnEdit = itemView.findViewById(R.id.btn_Update);
             btnDelete = itemView.findViewById(R.id.btn_Delete);
-
         }
     }
 
