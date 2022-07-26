@@ -9,12 +9,6 @@ public class NoteModel {
 
     }
 
-    public NoteModel(String title, String description){
-        this.title = title;
-        this.description = description;
-
-    }
-
     public NoteModel(String title, String description, String createdAt){
         this.title = title;
         this.description = description;

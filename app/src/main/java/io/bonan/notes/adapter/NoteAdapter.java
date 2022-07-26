@@ -134,6 +134,7 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.MyViewHolder> 
                         Toast.makeText(holder.title.getContext(), "Note Berhasil di Delete", Toast.LENGTH_SHORT).show();
                     }
                 });
+
                 builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {

@@ -20,36 +20,36 @@ import io.bonan.notes.util.DateUtil;
 import java.util.Objects;
 
 public class AddActivity extends AppCompatActivity {
-    //Variable
     TextInputLayout titleTV, descriptionTV;
     Button SEND, btn_Back;
     FirebaseDatabase rootNode;
     DatabaseReference reference;
+    FirebaseUser user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add);
 
-        //Hooks to all xml elements in activity_registrasi.xml
+        // hooks to all xml elements in activity-register.xml
         titleTV = findViewById(R.id.TITLE);
         descriptionTV = findViewById(R.id.DESC);
         SEND = findViewById(R.id.Send);
         btn_Back =findViewById(R.id.btnBack);
-        // get current logged-in user
 
-        //Save data in firebase on button click
+        // save data in firebase on button click
         SEND.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 rootNode = FirebaseDatabase.getInstance("https://bonan-notes-default-rtdb.asia-southeast1.firebasedatabase.app/");
+
                 // get all the value
                 String Title = Objects.requireNonNull(titleTV.getEditText()).getText().toString();
                 String Description = Objects.requireNonNull(descriptionTV.getEditText()).getText().toString();
                 String CreatedAt = DateUtil.dateNow();
 
                 // get current logged-in user
-                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                user = FirebaseAuth.getInstance().getCurrentUser();
 
                 if (user != null) {
                     // create db ref
@@ -73,7 +73,7 @@ public class AddActivity extends AppCompatActivity {
             }
         });
 
-        //back
+        // back
         btn_Back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
