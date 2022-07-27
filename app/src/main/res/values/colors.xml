@@ -11,6 +11,7 @@
     <color name="second">#83a3a2</color>
     <color name="editText">#a5cccb</color>
     <color name="button">#689493</color>
+    <color name="delete">#ff0000</color>
 
     <color name="black_shade_1">#0e2433</color>
     <color name="black_shade_2">#1C4966</color>

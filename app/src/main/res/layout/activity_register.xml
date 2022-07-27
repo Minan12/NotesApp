@@ -8,6 +8,17 @@
     android:background="@color/black_shade_1"
     tools:context=".RegisterActivity">
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="25dp"
+        android:layout_marginTop="70dp"
+        android:layout_marginRight="25dp"
+        android:gravity="center"
+        android:text="REGISTER"
+        android:textStyle="bold"
+        android:textSize="30dp"
+        android:textColor="@color/white" />
     <!--edit text for user name-->
     <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/idTILUserName"

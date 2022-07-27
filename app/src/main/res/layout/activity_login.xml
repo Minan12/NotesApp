@@ -7,6 +7,18 @@
     android:background="@color/black_shade_1"
     tools:context=".LoginActivity">
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="25dp"
+        android:layout_marginTop="70dp"
+        android:layout_marginRight="25dp"
+        android:gravity="center"
+        android:text="LOGIN"
+        android:textStyle="bold"
+        android:textSize="30dp"
+        android:textColor="@color/white" />
+
     <!--edit text for user name-->
     <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/idTILUserName"
@@ -71,8 +83,7 @@
         android:layout_marginEnd="25dp"
         android:background="@drawable/button_back"
         android:text="Login"
-        android:textAllCaps="false"
-        />
+        android:textAllCaps="false" />
 
     <!--text view for creating a new account-->
     <TextView

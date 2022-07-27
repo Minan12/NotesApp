@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F9F5F2"
+    android:background="@color/black_shade_1"
     tools:context=".AddActivity">
 
     <RelativeLayout
@@ -26,41 +26,50 @@
                 android:text="ADD NOTE"
                 android:textStyle="bold"
                 android:textSize="30dp"
-                android:textColor="@color/black" />
+                android:textColor="@color/white" />
 
             <com.google.android.material.textfield.TextInputLayout
-
                 android:id="@+id/TITLE"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="30dp"
                 android:layout_marginTop="5dp"
                 android:layout_marginRight="30dp"
+                android:textColorHint="@color/white"
+                app:hintTextColor="@color/white"
                 android:hint="Title"
                 android:textSize="15dp">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="text"/>
+                    android:inputType="text"
+                    android:textColor="@color/white"
+                    android:textColorHint="@color/white"/>
 
             </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputLayout
 
+
+            <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/DESC"
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
+                android:layout_height="wrap_content"
                 android:layout_marginLeft="30dp"
                 android:layout_marginTop="5dp"
                 android:layout_marginRight="30dp"
-                android:hint="Descrition"
-                android:textSize="15dp">
+                android:hint="Description"
+                android:textSize="15dp"
+                android:textColor="@color/white"
+                android:textColorHint="@color/white"
+                >
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
                     android:layout_height="200dp"
-                    android:inputType="text"/>
+                    android:inputType="text"
+                    android:textColor="@color/white"
+                    android:textColorHint="@color/white"/>
 
             </com.google.android.material.textfield.TextInputLayout>
 
